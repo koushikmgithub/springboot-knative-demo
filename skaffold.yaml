@@ -1,0 +1,15 @@
+apiVersion: skaffold/v2beta22
+kind: Config
+metadata:
+  name: springboot-knative-demo
+build:
+  artifacts:
+  - image: dockertestbaby/springboot-knative-demo
+  local:
+    push: true
+deploy:
+  kubectl:
+    manifests:
+    - kubernetes/mongodb-deployment.yaml
+    - kubernetes/app-knative-service.yaml
+

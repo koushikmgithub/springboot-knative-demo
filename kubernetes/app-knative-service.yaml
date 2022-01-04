@@ -1,0 +1,39 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: springboot-knative-demo
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/target: "15"
+      # This is the name of our new "Revision," it must follow the convention {service-name}-{revision-name}
+      name: springboot-knative-demo-final
+    spec:
+      containers:
+        - image: dockertestbaby/springboot-knative-demo
+          ports:
+            - containerPort: 8096
+          env:
+            - name: MONGO_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: mongodb
+                  key: database-name
+            - name: MONGO_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb
+                  key: database-user
+            - name: MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb
+                  key: database-password
+  traffic:
+  - latestRevision: true
+    percent: 60
+  - revisionName: springboot-knative-demo-rev2
+    percent: 20
+  - revisionName: springboot-knative-demo-rev1
+    percent: 20  
